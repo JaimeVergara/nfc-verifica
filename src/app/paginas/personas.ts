@@ -30,8 +30,15 @@ import { generarCodigo, Persona, Supabase } from '../supabase';
             </div>
             <div class="acciones">
               <button (click)="copiar(p)">{{ copiado() === p.id ? 'Copiado' : 'Copiar URL' }}</button>
+              <button (click)="verQr(p)">QR</button>
               <button class="secundario" (click)="cambiarActivo(p)">{{ p.activo ? 'Desactivar' : 'Activar' }}</button>
             </div>
+            @if (qr()?.id === p.id) {
+              <div class="qr">
+                <img [src]="qr()!.imagen" alt="Código QR" />
+                <a [href]="qr()!.imagen" [download]="'qr-' + p.nombre + '.png'">Descargar QR</a>
+              </div>
+            }
           </li>
         } @empty {
           <li class="tenue">Aún no hay personas.</li>
@@ -46,6 +53,7 @@ export class Personas implements OnInit {
   readonly personas = signal<Persona[]>([]);
   readonly error = signal('');
   readonly copiado = signal('');
+  readonly qr = signal<{ id: string; imagen: string } | null>(null);
   nombre = '';
   rut = '';
   fotoUrl = '';
@@ -79,6 +87,17 @@ export class Personas implements OnInit {
   async cambiarActivo(p: Persona) {
     await this.supabase.client.from('personas').update({ activo: !p.activo }).eq('id', p.id);
     this.cargar();
+  }
+
+  // El QR lleva la misma URL que la etiqueta NFC: la cámara del teléfono lo abre igual.
+  async verQr(p: Persona) {
+    if (this.qr()?.id === p.id) {
+      this.qr.set(null);
+      return;
+    }
+    const QRCode = await import('qrcode');
+    const imagen = await QRCode.toDataURL(this.supabase.urlEtiqueta(p.codigo), { width: 320, margin: 2 });
+    this.qr.set({ id: p.id, imagen });
   }
 
   async copiar(p: Persona) {

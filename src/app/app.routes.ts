@@ -18,5 +18,10 @@ export const routes: Routes = [
   { path: '', component: Inicio, canActivate: [conSesion] },
   { path: 'v/:codigo', component: Verificar, canActivate: [conSesion] },
   { path: 'personas', component: Personas, canActivate: [conSesion] },
+  {
+    path: 'escanear',
+    loadComponent: () => import('./paginas/escanear').then((m) => m.Escanear),
+    canActivate: [conSesion],
+  },
   { path: '**', redirectTo: '' },
 ];

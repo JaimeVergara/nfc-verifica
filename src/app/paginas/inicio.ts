@@ -9,8 +9,10 @@ import { Supabase } from '../supabase';
     <main class="caja">
       <h1>Verificación NFC</h1>
       <p>Acerca el teléfono a una etiqueta y toca el aviso que aparece para ver el resultado.</p>
+      <p>Si la persona trae un código QR, escanéalo aquí:</p>
+      <a class="boton" routerLink="/escanear">Escanear QR</a>
       <p class="tenue">Sesión: {{ supabase.session()?.user?.email }}</p>
-      <a class="boton" routerLink="/personas">Personas registradas</a>
+      <a class="boton secundario" routerLink="/personas">Personas registradas</a>
       <button class="secundario" (click)="salir()">Cerrar sesión</button>
     </main>
   `,
