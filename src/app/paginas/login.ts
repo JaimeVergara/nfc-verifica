@@ -1,22 +1,33 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Icono } from '../icono';
 import { Supabase } from '../supabase';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, Icono],
   template: `
-    <main class="caja">
-      <h1>Ingresar</h1>
-      <form (ngSubmit)="ingresar()">
-        <input type="email" name="correo" [(ngModel)]="correo" placeholder="Correo" autocomplete="username" required />
-        <input type="password" name="clave" [(ngModel)]="clave" placeholder="Contraseña" autocomplete="current-password" required />
-        <button [disabled]="cargando()">{{ cargando() ? 'Ingresando…' : 'Ingresar' }}</button>
-      </form>
-      @if (error()) {
-        <p class="error">{{ error() }}</p>
-      }
+    <main class="login">
+      <div class="tarjeta login-caja">
+        <span class="logo grande"><app-icono nombre="escudo" /></span>
+        <h1>Verifica</h1>
+        <p class="tenue">Ingresa para verificar personas con NFC o QR</p>
+        <form (ngSubmit)="ingresar()">
+          <label class="campo">
+            Correo
+            <input type="email" name="correo" [(ngModel)]="correo" autocomplete="username" required />
+          </label>
+          <label class="campo">
+            Contraseña
+            <input type="password" name="clave" [(ngModel)]="clave" autocomplete="current-password" required />
+          </label>
+          @if (error()) {
+            <p class="error">{{ error() }}</p>
+          }
+          <button class="btn primario bloque" [disabled]="cargando()">{{ cargando() ? 'Ingresando…' : 'Ingresar' }}</button>
+        </form>
+      </div>
     </main>
   `,
 })

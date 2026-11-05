@@ -1,16 +1,19 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import jsQR from 'jsqr';
+import { Barra } from '../barra';
 
 @Component({
   selector: 'app-escanear',
-  imports: [RouterLink],
+  imports: [Barra],
   template: `
-    <main class="caja escaner">
-      <a routerLink="/">← Inicio</a>
-      <h1>Escanear QR</h1>
-      <video #video playsinline muted></video>
-      <p [class.error]="mensajeError()">{{ mensaje() }}</p>
+    <app-barra titulo="Escanear QR" subtitulo="Apunta al código de la persona" atras="/" />
+    <main class="contenido">
+      <div class="visor">
+        <video #video playsinline muted></video>
+        <div class="marco"></div>
+      </div>
+      <p class="aviso" [class.error]="mensajeError()">{{ mensaje() }}</p>
     </main>
   `,
 })
