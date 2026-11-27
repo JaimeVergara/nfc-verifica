@@ -11,7 +11,7 @@ import { Supabase } from '../supabase';
     <app-barra titulo="Verifica" [subtitulo]="supabase.session()?.user?.email" />
     <main class="contenido">
       <section class="saludo">
-        <h1>Hola</h1>
+        <h1>Hola{{ supabase.perfil()?.nombre ? ', ' + supabase.perfil()!.nombre.split(' ')[0] : '' }}</h1>
         <p class="tenue">¿Cómo quieres verificar a la persona?</p>
       </section>
 
@@ -39,16 +39,6 @@ import { Supabase } from '../supabase';
           <p>Usa la cámara para leer el código de la persona.</p>
         </a>
       </div>
-
-      <h2 class="seccion">Administrar</h2>
-      <a class="tarjeta fila clicable" routerLink="/personas">
-        <span class="burbuja"><app-icono nombre="personas" /></span>
-        <div>
-          <strong>Personas</strong>
-          <p>Agregar, fotos, códigos QR y URLs de etiquetas</p>
-        </div>
-        <app-icono class="tenue" nombre="flecha" />
-      </a>
     </main>
   `,
 })

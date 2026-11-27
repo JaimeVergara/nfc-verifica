@@ -33,3 +33,15 @@ Abrir http://localhost:4200
 
 > Usa datos inventados en pruebas. La URL grabada depende del dominio: si cambias de hosting,
 > configura `urlEtiquetas` en `config.ts` con tu dominio definitivo antes de grabar las etiquetas reales.
+
+## 5. Usuarios y administradores
+Hay dos roles: **verificador** (solo verifica NFC/QR) y **administrador** (además gestiona personas y usuarios
+desde el menú lateral).
+
+1. Ejecutar `supabase/usuarios.sql` en el SQL Editor, cambiando antes `TU-CORREO` por tu correo de ingreso.
+2. Publicar la función que crea y edita usuarios (usa la clave secreta en el servidor, nunca en la app):
+   **Edge Functions → Deploy a new function → Via Editor**, nombre `admin-usuarios`,
+   pegar `supabase/functions/admin-usuarios/index.ts` → **Deploy**.
+3. Desde ese momento los usuarios se crean en la app: menú → **Usuarios de la app** → Agregar.
+
+Un usuario desactivado no puede iniciar sesión ni consultar datos.

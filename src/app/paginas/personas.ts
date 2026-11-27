@@ -8,7 +8,7 @@ import { generarCodigo, Persona, Supabase } from '../supabase';
   selector: 'app-personas',
   imports: [FormsModule, Barra, Icono],
   template: `
-    <app-barra titulo="Personas" [subtitulo]="personas().length + ' registradas'" atras="/" />
+    <app-barra titulo="Personas" [subtitulo]="personas().length + ' registradas'" />
     <main class="contenido">
       <div class="herramientas">
         <label class="buscador">

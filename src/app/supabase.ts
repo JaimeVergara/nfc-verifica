@@ -1,6 +1,15 @@
-import { Injectable, signal } from '@angular/core';
-import { createClient, Session } from '@supabase/supabase-js';
+import { computed, Injectable, signal } from '@angular/core';
+import { createClient, FunctionsHttpError, Session } from '@supabase/supabase-js';
 import { config } from './config';
+
+export type Rol = 'admin' | 'verificador';
+
+export interface Perfil {
+  id: string;
+  nombre: string;
+  rol: Rol;
+  activo: boolean;
+}
 
 export interface Persona {
   id: string;
@@ -17,15 +26,43 @@ export class Supabase {
     auth: { detectSessionInUrl: false },
   });
   readonly session = signal<Session | null>(null);
+  readonly perfil = signal<Perfil | null>(null);
+  readonly esAdmin = computed(() => this.perfil()?.rol === 'admin' && !!this.perfil()?.activo);
 
   constructor() {
-    this.client.auth.onAuthStateChange((_evento, sesion) => this.session.set(sesion));
+    this.client.auth.onAuthStateChange((_evento, sesion) => {
+      this.session.set(sesion);
+      if (!sesion) this.perfil.set(null);
+    });
   }
 
+  // true si hay sesión y el usuario tiene un perfil activo.
   async haySesion(): Promise<boolean> {
     const { data } = await this.client.auth.getSession();
     this.session.set(data.session);
-    return !!data.session;
+    if (!data.session) return false;
+    if (this.perfil()?.id !== data.session.user.id) {
+      const { data: perfil } = await this.client
+        .from('perfiles')
+        .select('id, nombre, rol, activo')
+        .eq('id', data.session.user.id)
+        .maybeSingle<Perfil>();
+      this.perfil.set(perfil);
+    }
+    return !!this.perfil()?.activo;
+  }
+
+  // Llama a la Edge Function "admin-usuarios" (solo funciona para administradores).
+  async adminUsuarios<T>(cuerpo: Record<string, unknown>): Promise<T> {
+    const { data, error } = await this.client.functions.invoke('admin-usuarios', { body: cuerpo });
+    if (error) {
+      let mensaje = error.message;
+      if (error instanceof FunctionsHttpError) {
+        mensaje = (await error.context.json().catch(() => null))?.error ?? mensaje;
+      }
+      throw new Error(mensaje);
+    }
+    return data as T;
   }
 
   urlEtiqueta(codigo: string): string {

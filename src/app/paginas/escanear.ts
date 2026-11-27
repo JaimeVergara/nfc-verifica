@@ -7,7 +7,7 @@ import { Barra } from '../barra';
   selector: 'app-escanear',
   imports: [Barra],
   template: `
-    <app-barra titulo="Escanear QR" subtitulo="Apunta al código de la persona" atras="/" />
+    <app-barra titulo="Escanear QR" subtitulo="Apunta al código de la persona" />
     <main class="contenido">
       <div class="visor">
         <video #video playsinline muted></video>

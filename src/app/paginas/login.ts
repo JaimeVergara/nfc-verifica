@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Icono } from '../icono';
@@ -31,15 +31,20 @@ import { Supabase } from '../supabase';
     </main>
   `,
 })
-export class Login {
+export class Login implements OnInit {
   private supabase = inject(Supabase);
   private router = inject(Router);
 
   readonly volver = input<string>('/');
+  readonly sinAcceso = input<string>();
   correo = '';
   clave = '';
   readonly cargando = signal(false);
   readonly error = signal('');
+
+  ngOnInit() {
+    if (this.sinAcceso()) this.error.set('Tu usuario no tiene acceso. Pide a un administrador que lo active.');
+  }
 
   async ingresar() {
     this.cargando.set(true);
@@ -50,7 +55,9 @@ export class Login {
     });
     this.cargando.set(false);
     if (error) {
-      this.error.set('Correo o contraseña incorrectos');
+      this.error.set(
+        error.code === 'user_banned' ? 'Tu usuario está desactivado' : 'Correo o contraseña incorrectos',
+      );
       return;
     }
     this.router.navigateByUrl(this.volver() || '/');
