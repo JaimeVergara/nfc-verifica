@@ -186,7 +186,9 @@ export class Personas implements OnInit {
       this.qr.set(null);
       return;
     }
-    const QRCode = await import('qrcode');
+    // qrcode es CommonJS: en la compilación de producción sus funciones quedan dentro de "default".
+    const modulo = (await import('qrcode')) as typeof import('qrcode') & { default?: typeof import('qrcode') };
+    const QRCode = modulo.default ?? modulo;
     const imagen = await QRCode.toDataURL(this.supabase.urlEtiqueta(p.codigo), { width: 320, margin: 2 });
     this.qr.set({ id: p.id, imagen });
   }

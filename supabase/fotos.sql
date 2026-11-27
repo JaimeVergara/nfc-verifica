@@ -1,8 +1,9 @@
--- Fotos de personas. Ejecutar una vez en Supabase: SQL Editor → New query → Run.
--- Bucket PRIVADO: las fotos solo se ven con sesión iniciada (enlaces temporales).
-
-insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('fotos', 'fotos', false, 512000, array['image/jpeg']);
+-- Fotos de personas.
+-- 1) Crear el bucket desde el panel (Supabase no permite crearlo por SQL):
+--    Storage → New bucket → Name: fotos · Public bucket: NO (privado)
+--    Restrict file size: 500 KB · Allowed MIME types: image/jpeg
+-- 2) Luego ejecutar esto en SQL Editor → New query → Run.
+--    Las fotos solo se ven con sesión iniciada (enlaces temporales).
 
 create policy "usuarios con sesión ven fotos" on storage.objects
   for select to authenticated using (bucket_id = 'fotos');
